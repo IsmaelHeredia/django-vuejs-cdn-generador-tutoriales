@@ -1,0 +1,203 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Generador de tutoriales{% endblock %}
+
+{% block content %}
+  <div id="app" class="container-fluid">
+
+    <br/>
+
+    <h1 class="text-center" style="color: white;">Tutoriales de canciones</h1>
+
+    <br/>
+
+    <div v-if="!tutoriales.length" class="text-center">
+      No se encontraron registros
+      <br/>
+      <br/>
+    </div>
+    <div v-if="tutoriales.length">
+      <div style="height:700px; overflow:auto;">
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Titulo</th>
+                    <th>Afinación</th>
+                    <th>Link youtube</th>
+                    <th>Fecha</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="tutorial in tutoriales" :key="tutorial.id">
+                    <td>[[tutorial.titulo]]</td>
+                    <td>[[tutorial.afinacion]]</td>
+                    <td>[[tutorial.link_youtube]]</td>
+                    <td>[[convertirFecha(tutorial.fecha)]]</td>
+                    <td>
+                      <a href="#modalDatos" class="btn btn-primary" data-bs-toggle="modal" @click="editarTutorial(tutorial.id)">Editar</a>
+                      <a class="btn btn-primary" style="margin-left: 10px;" @click="borrarTutorial(tutorial.id)">Borrar</a>
+                      <a :href="'/capturas/' + [[tutorial.id]]" class="btn btn-primary" style="margin-left: 10px;">Capturas</a>
+                      <a :href="'/generar/' + [[tutorial.id]]" class="btn btn-primary" style="margin-left: 10px;">Generar</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="modalDatos" class="modal fade" tabindex="-1" aria-labelledby="datosModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="datosModalLabel">Datos</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close"></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="mb-3">
+                <label for="titulo" class="col-form-label">Titulo:</label>
+                <input type="text" class="form-control" id="titulo" v-model="titulo">
+              </div>
+              <div class="mb-3">
+                <label for="titulo" class="col-form-label">Afinación:</label>
+                <input type="text" class="form-control" id="afinacion" v-model="afinacion">
+              </div>
+              <div class="mb-3">
+                <label for="titulo" class="col-form-label">Youtube link:</label>
+                <input type="text" class="form-control" id="link_youtube" v-model="link_youtube">
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            <button type="button" class="btn btn-primary" @click="guardarTutorial()">Guardar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <br/>
+
+    <div class="col-12 text-center">
+      <a href="#modalDatos" class="btn btn-primary" data-bs-toggle="modal" @click="nuevoTutorial()">Agregar nuevo tutorial</a>
+    </div>
+
+  </div>
+
+  <script>
+
+    var url_api = "";
+
+    const app = Vue.createApp({
+      delimiters: ["[[", "]]"],
+      data() {
+        return {
+            probando: "{{test}}",
+            tutoriales: [],
+            id: "",
+            titulo: "",
+            afinacion: "",
+            link_youtube:"",
+            editando: 0,
+        }
+      },
+      mounted: function() {
+        this.listarTutoriales();
+      },
+      computed: {},
+      methods: {
+        listarTutoriales: function() {
+          axios
+          .post(url_api + "/api/tutoriales/")
+          .then(response => {
+            this.tutoriales = response.data.tutoriales
+          })
+          .catch(function (error) {
+            console.log(error);
+          })
+        },
+        nuevoTutorial: function() {
+          this.editando = 0;
+          this.titulo = "";
+          this.afinacion = "Estándar";
+          this.link_youtube = "###";
+        },
+        editarTutorial: function(id_tutorial) {
+          this.editando = 1;
+          this.id = id_tutorial;
+          axios
+          .post(url_api + "/api/tutoriales/cargar", {"id_tutorial":id_tutorial})
+          .then(response => {
+            var datos = response.data.tutorial[0];
+            this.titulo = datos.titulo;
+            this.afinacion = datos.afinacion;
+            this.link_youtube = datos.link_youtube;
+          })
+          .catch(function (error) {
+            console.log(error);
+          })
+        },
+        guardarTutorial: function() {
+          if(this.editando == 0) {
+            axios
+            .post(url_api + "/api/tutoriales/agregar",{"titulo":this.titulo,"afinacion":this.afinacion,"link_youtube":this.link_youtube})
+            .then(response => {
+              var datos = response.data;
+              document.getElementById('close').click();
+              this.listarTutoriales();
+              toastr.success("La tarea fue guardada");
+            })
+            .catch(function (error) {
+              console.log(error);
+            })
+          } else {
+            axios
+            .post(url_api + "/api/tutoriales/editar",{"id_tutorial":this.id,"titulo":this.titulo,"afinacion":this.afinacion,"link_youtube":this.link_youtube})
+            .then(response => {
+              var datos = response.data;
+              document.getElementById('close').click();
+              this.listarTutoriales();
+              toastr.success("La tarea fue actualizada");
+            })
+            .catch(function (error) {
+              console.log(error);
+            })
+          }
+        },
+        borrarTutorial: function(id_tutorial) {
+          Swal.fire({
+          title: "Desea borrar el tutorial ?",
+          showDenyButton: true,
+          confirmButtonText: "Borrar",
+          denyButtonText: "Cancelar",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              axios
+              .post(url_api + "/api/tutoriales/borrar", {"id_tutorial":id_tutorial})
+              .then(response => {
+                var datos = response.data;
+                this.listarTutoriales();
+                toastr.success("El tutorial fue borrado");
+              })
+              .catch(function (error) {
+                console.log(error);
+              })
+            }
+          })
+        },
+        convertirFecha(fecha) {
+          return moment(fecha).format("DD/MM/YYYY")
+        }
+      },
+    });
+
+    app.mount("#app");
+
+    $(function() {
+      $(".modal").modal();
+    });
+
+  </script>
+{% endblock %}
+

@@ -1,0 +1,85 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Generador de tutoriales{% endblock %}
+
+{% block content %}
+  <div id="app" class="container-fluid">
+
+    <br/>
+
+    <h1 class="text-center" style="color: white;">[[titulo]]</h1>
+
+    <br/>
+
+    <div v-if="!capturas.length" class="text-center">
+      No se encontraron registros
+      <br/>
+      <br/>
+    </div>
+    <div v-if="capturas.length">
+
+      <section class="galeria">
+
+        <div class="card" v-for="captura in capturas" :key="captura.id">
+
+          <a :href="'#image' + [[captura.id]]"><img :src="'/static/uploads/' + [[captura.imagen]]" data-toggle="tooltip" data-placement="top"></a>
+          <div class="card-body">
+              <p class="card-text">[[captura.descripcion]]</p>
+          </div>
+
+        </div>
+
+      </section>
+
+      <article class="light-box" v-for="captura in capturas" :id="'image' + [[captura.id]]">
+        <figure>
+            <img :src="'/static/uploads/' + [[captura.imagen]]" alt="">
+            <figcaption class="descripcion">[[captura.descripcion]]</figcaption>
+        </figure>
+        <a href="#" class="close">X</a>
+    </article>
+
+    </div>
+
+  </div>
+
+  <script>
+
+    var url_api = "";
+
+    const app = Vue.createApp({
+      delimiters: ["[[", "]]"],
+      data() {
+        return {
+            titulo: "",
+            capturas: [],
+            id_tutorial: "{{id_tutorial}}",
+        }
+      },
+      mounted: function() {
+        this.listarCapturas();
+      },
+      computed: {},
+      methods: {
+        listarCapturas: function() {
+          axios
+          .post(url_api + "/api/capturas/", {id_tutorial:this.id_tutorial})
+          .then(response => {
+            this.titulo = response.data.titulo;
+            this.capturas = response.data.capturas;
+          })
+          .catch(function (error) {
+            console.log(error);
+          })
+        }
+      }
+    });
+
+    app.mount("#app");
+
+    $(function() {
+      $(".modal").modal();
+    });
+
+  </script>
+{% endblock %}
