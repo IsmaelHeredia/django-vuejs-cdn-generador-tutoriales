@@ -20,7 +20,7 @@
 
         <div class="col d-flex justify-content-center">
 
-          <video id="video1" class="videoInsert" muted controls>
+          <video id="video1" class="videoInsert" controls>
             <source src="" type="video/mp4" />
           </video>
 
@@ -73,7 +73,7 @@
                 <tr v-for="captura in capturas" :key="captura.id">
                     <td>[[captura.descripcion]]</td>
                     <td><img :src="'/static/uploads/' + [[captura.imagen]]" style="width:300px;height:200px;"></td>
-                    <td>[[captura.fecha]]</td>
+                    <td>[[convertirFecha(captura.fecha)]]</td>
                     <td>[[captura.orden]]</td>
                     <td>
                       <a class="btn btn-primary" style="margin-left: 10px;" @click="cambiarDescripcion(captura.id)">Cambiar descripción</a>
@@ -103,11 +103,6 @@
         var w, h, ratio;
 
         video.addEventListener('loadedmetadata', function() {
-
-            console.log("datos del video");
-
-            console.log(video.videoWidth);
-            console.log(video.videoHeight);
 
             ratio = video.videoWidth / video.videoHeight;
 
@@ -258,6 +253,9 @@
               })
             }
           })
+        },
+        convertirFecha(fecha) {
+          return moment(fecha).format("DD/MM/YYYY")
         }
       }
     });
