@@ -3,6 +3,7 @@ from django.db import models
 class Cancion(models.Model):
     titulo = models.CharField(max_length = 180)
     afinacion = models.CharField(max_length = 180)
+    dificultad = models.CharField(max_length = 180, default='')
     link_youtube = models.CharField(max_length = 180)
     fecha = models.DateTimeField(auto_now = True, blank = True)
 

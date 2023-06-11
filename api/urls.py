@@ -9,6 +9,7 @@ urlpatterns = [
     re_path(r'^tutoriales/borrar$', views.borrar_tutorial, name='borrar_tutorial'),
     re_path(r'^capturas/$', views.listar_capturas, name='listar_capturas'),
     re_path(r'^capturas/subir$', views.subir_captura, name='subir_captura'),
+    re_path(r'^capturas/subirImagen$', views.subir_imagen, name='subir_imagen'),
     re_path(r'^capturas/borrar$', views.borrar_captura, name='borrar_captura'),
     re_path(r'^capturas/cambiarOrden$', views.cambiar_orden, name='cambiar_orden'),
     re_path(r'^capturas/cambiarDescripcion$', views.cambiar_descripcion, name='cambiar_descripcion'),

@@ -34,8 +34,19 @@
           <button id="btnCapturar" class="btn btn-primary" style="margin-left:10px">Capturar imagen</button>
           <button id="btnGuardar" class="btn btn-primary" style="margin-left:10px" @click="guardarCaptura()">Guardar</button>
         </div>
-    
+  
       </div>
+
+      <div class="mt-3 mb-3 row">
+        <div class="col-lg-3"></div>
+        <div class="col-lg-4">
+          <input class="form-control" type="file" ref="file" @change="seleccionarImagen" accept="image/x-png,image/gif,image/jpeg">
+        </div>
+        <div class="col">
+          <button id="btnSubir" class="btn btn-primary" @click="subirCaptura()">Subir imagen local</button>
+        </div>
+      </div>
+
     </div>
 
     <div class="card" style="margin-top:30px;margin-left:200px;margin-right:200px" id="card-fotos">
@@ -136,6 +147,7 @@
             afinacion: "",
             link_youtube:"",
             editando: 0,
+            imagen_local: null
         }
       },
       mounted: function() {
@@ -253,6 +265,41 @@
               })
             }
           })
+        },
+        seleccionarImagen() {
+          this.imagen_local = this.$refs.file.files.item(0);
+        },
+        subirCaptura() {
+
+          var descripcion = prompt('Ingrese descripción');
+
+          if(descripcion != null && descripcion != "") {
+
+            var formData = new FormData();
+            formData.append("imagen_local",this.imagen_local);
+            formData.append("id_tutorial",this.id_tutorial);
+            formData.append("descripcion",descripcion);
+
+            const headers = {
+              "Content-Type": "multipart/form-data",
+              "X-CSRFToken" : "{{ csrf_token }}"
+            }
+
+            axios
+            .post(url_api + "/api/capturas/subirImagen", formData, {
+              headers: headers
+            })
+            .then(response => {
+              var datos = response.data;
+              this.listarCapturas();
+              toastr.success("La captura fue subida");
+            })
+            .catch(function (error) {
+              console.log(error);
+            })
+
+          }
+
         },
         convertirFecha(fecha) {
           return moment(fecha).format("DD/MM/YYYY")

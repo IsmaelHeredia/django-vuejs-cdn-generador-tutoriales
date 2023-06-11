@@ -23,6 +23,7 @@
                 <tr>
                     <th>Titulo</th>
                     <th>Afinación</th>
+                    <th>Dificultad</th>
                     <th>Link youtube</th>
                     <th>Fecha</th>
                     <th>Acción</th>
@@ -32,7 +33,8 @@
                 <tr v-for="tutorial in tutoriales" :key="tutorial.id">
                     <td>[[tutorial.titulo]]</td>
                     <td>[[tutorial.afinacion]]</td>
-                    <td>[[tutorial.link_youtube]]</td>
+                    <td>[[tutorial.dificultad]]</td>
+                    <td><a target="_blank" :href="[[tutorial.link_youtube]]">[[tutorial.link_youtube]]</a></td>
                     <td>[[convertirFecha(tutorial.fecha)]]</td>
                     <td>
                       <a href="#modalDatos" class="btn btn-primary" data-bs-toggle="modal" @click="editarTutorial(tutorial.id)">Editar</a>
@@ -62,6 +64,14 @@
               <div class="mb-3">
                 <label for="titulo" class="col-form-label">Afinación:</label>
                 <input type="text" class="form-control" id="afinacion" v-model="afinacion">
+              </div>
+              <div class="mb-3">
+                <label for="dificultad" class="col-form-label">Dificultad:</label>
+                <select class="form-select" v-model="dificultad">
+                  <option value="Fácil">Fácil</option>
+                  <option value="Intermedio">Intermedio</option>
+                  <option value="Difícil">Difícil</option>
+                </select>
               </div>
               <div class="mb-3">
                 <label for="titulo" class="col-form-label">Youtube link:</label>
@@ -98,6 +108,7 @@
             id: "",
             titulo: "",
             afinacion: "",
+            dificultad: "",
             link_youtube:"",
             editando: 0,
         }
@@ -121,6 +132,7 @@
           this.editando = 0;
           this.titulo = "";
           this.afinacion = "Estándar";
+          this.dificultad = "Fácil";
           this.link_youtube = "###";
         },
         editarTutorial: function(id_tutorial) {
@@ -132,6 +144,7 @@
             var datos = response.data.tutorial[0];
             this.titulo = datos.titulo;
             this.afinacion = datos.afinacion;
+            this.dificultad = datos.dificultad;
             this.link_youtube = datos.link_youtube;
           })
           .catch(function (error) {
@@ -141,7 +154,7 @@
         guardarTutorial: function() {
           if(this.editando == 0) {
             axios
-            .post(url_api + "/api/tutoriales/agregar",{"titulo":this.titulo,"afinacion":this.afinacion,"link_youtube":this.link_youtube})
+            .post(url_api + "/api/tutoriales/agregar",{"titulo":this.titulo,"afinacion":this.afinacion,"dificultad":this.dificultad,"link_youtube":this.link_youtube})
             .then(response => {
               var datos = response.data;
               document.getElementById('close').click();
@@ -153,7 +166,7 @@
             })
           } else {
             axios
-            .post(url_api + "/api/tutoriales/editar",{"id_tutorial":this.id,"titulo":this.titulo,"afinacion":this.afinacion,"link_youtube":this.link_youtube})
+            .post(url_api + "/api/tutoriales/editar",{"id_tutorial":this.id,"titulo":this.titulo,"afinacion":this.afinacion,"dificultad":this.dificultad,"link_youtube":this.link_youtube})
             .then(response => {
               var datos = response.data;
               document.getElementById('close').click();
