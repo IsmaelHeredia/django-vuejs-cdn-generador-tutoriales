@@ -1,9 +1,22 @@
 from django.db import models
 
+class Dificultad(models.Model):
+    nombre = models.CharField(max_length = 180)
+
+    def __str__(self):
+        return self.nombre
+    
+class Genero(models.Model):
+    nombre = models.CharField(max_length = 180)
+
+    def __str__(self):
+        return self.nombre
+
 class Cancion(models.Model):
     titulo = models.CharField(max_length = 180)
     afinacion = models.CharField(max_length = 180)
-    dificultad = models.CharField(max_length = 180, default='')
+    dificultad = models.ForeignKey(Dificultad,on_delete=models.CASCADE,default=0,db_constraint=False)
+    genero = models.ForeignKey(Genero,on_delete=models.CASCADE,default=0,db_constraint=False)
     link_youtube = models.CharField(max_length = 180)
     fecha = models.DateTimeField(auto_now = True, blank = True)
 

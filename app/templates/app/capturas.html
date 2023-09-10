@@ -1,6 +1,6 @@
 {% extends 'layouts/base.html' %}
 
-{% block title %}Generador de tutoriales{% endblock %}
+{% block title %}Capturas{% endblock %}
 
 {% block content %}
 
@@ -29,10 +29,10 @@
         <div class="mt-3 col d-flex justify-content-center">
           <label class="btn btn-primary" for="file">
             <input id="file" type="file" class="d-none">
-            Cargar video
+            <i class="fa fa-video-camera" aria-hidden="true"></i> Cargar video
           </label>
-          <button id="btnCapturar" class="btn btn-primary" style="margin-left:10px">Capturar imagen</button>
-          <button id="btnGuardar" class="btn btn-primary" style="margin-left:10px" @click="guardarCaptura()">Guardar</button>
+          <button id="btnCapturar" class="btn btn-primary" style="margin-left:10px"><i class="fa fa-picture-o" aria-hidden="true"></i> Capturar imagen</button>
+          <button id="btnGuardar" class="btn btn-primary" style="margin-left:10px" @click="guardarCaptura()"><i class="fa fa-floppy-o" aria-hidden="true"></i> Guardar</button>
         </div>
   
       </div>
@@ -43,7 +43,7 @@
           <input class="form-control" type="file" ref="file" @change="seleccionarImagen" accept="image/x-png,image/gif,image/jpeg">
         </div>
         <div class="col">
-          <button id="btnSubir" class="btn btn-primary" @click="subirCaptura()">Subir imagen local</button>
+          <button id="btnSubir" class="btn btn-primary" @click="subirCaptura()"><i class="fa fa-cloud-upload" aria-hidden="true"></i> Subir imagen local</button>
         </div>
       </div>
 
@@ -87,9 +87,9 @@
                     <td>[[convertirFecha(captura.fecha)]]</td>
                     <td>[[captura.orden]]</td>
                     <td>
-                      <a class="btn btn-primary" style="margin-left: 10px;" @click="cambiarDescripcion(captura.id)">Cambiar descripción</a>
-                      <a class="btn btn-primary" style="margin-left: 10px;" @click="cambiarOrden(captura.id)">Cambiar orden</a>
-                      <a class="btn btn-primary" style="margin-left: 10px;" @click="borrarCaptura(captura.id)">Borrar</a>
+                      <a class="btn btn-primary" style="margin-left: 10px;" @click="cambiarDescripcion(captura.id)"><i class="fa fa-pencil" aria-hidden="true"></i> Cambiar descripción</a>
+                      <a class="btn btn-primary" style="margin-left: 10px;" @click="cambiarOrden(captura.id)"><i class="fa fa-pencil" aria-hidden="true"></i> Cambiar orden</a>
+                      <a class="btn btn-primary" style="margin-left: 10px;" @click="borrarCaptura(captura.id)"><i class="fa fa-times" aria-hidden="true"></i> Borrar</a>
                     </td>
                 </tr>
             </tbody>

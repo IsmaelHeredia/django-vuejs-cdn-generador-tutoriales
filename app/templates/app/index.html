@@ -11,8 +11,70 @@
 
     <br/>
 
+    <div class="row">
+      <div class="col-lg-2">
+        <b>Buscar por título</b>
+      </div>
+      <div class="col-lg-2">
+        <input type="text" class="form-control" v-model="filtrar_titulo"/>
+      </div>
+      <div class="col-lg-1">
+        <button type="button" class="btn btn-primary" @click="filtrarPorTitulo()"><i class="fa fa-search" aria-hidden="true"></i></button>
+      </div>
+    </div>
+
+    <br/>
+
+    <div class="row">
+      <div class="col-lg-2">
+        <b>Filtrar por afinación</b>
+      </div>
+      <div class="col-lg-2">
+        <input type="text" class="form-control" v-model="filtrar_afinacion"/>
+      </div>
+      <div class="col-lg-1">
+        <button type="button" class="btn btn-primary" @click="filtrarPorAfinacion()"><i class="fa fa-search" aria-hidden="true"></i></button>
+      </div>
+    </div>
+
+    <br/>
+
+    <div class="row">
+      <div class="col-lg-2">
+        <b>Filtrar por dificultad</b>
+      </div>
+      <div class="col-lg-1">
+        <select class="form-select" v-model="filtrar_dificultad_id">
+          <option value="">Ninguna</option>
+          <option v-for = "dificultad in dificultades" :value="dificultad.id">[[dificultad.nombre]]</option>
+        </select>
+      </div>
+      <div class="col-lg-1">
+        <button type="button" class="btn btn-primary" @click="filtrarPorDificultad()"><i class="fa fa-search" aria-hidden="true"></i></button>
+      </div>
+    </div>
+
+    <br/>
+
+    <div class="row">
+      <div class="col-lg-2">
+        <b>Filtrar por genéro</b>
+      </div>
+      <div class="col-lg-1">
+        <select class="form-select" v-model="filtrar_genero_id">
+          <option value="">Ninguno</option>
+          <option v-for = "genero in generos" :value="genero.id">[[genero.nombre]]</option>
+        </select>
+      </div>
+      <div class="col-lg-1">
+        <button type="button" class="btn btn-primary" @click="filtrarPorGenero()"><i class="fa fa-search" aria-hidden="true"></i></button>
+      </div>
+    </div>
+
+    <br/>
+
     <div v-if="!tutoriales.length" class="text-center">
-      No se encontraron registros
+      <b>No se encontraron registros de tutoriales</b>
       <br/>
       <br/>
     </div>
@@ -21,10 +83,12 @@
         <table class="table">
             <thead class="thead-dark">
                 <tr>
-                    <th>Titulo</th>
+                    <th>Título</th>
                     <th>Afinación</th>
                     <th>Dificultad</th>
+                    <th>Genéro</th>
                     <th>Link youtube</th>
+                    <th>Capturas</th>
                     <th>Fecha</th>
                     <th>Acción</th>
                 </tr>
@@ -34,13 +98,15 @@
                     <td>[[tutorial.titulo]]</td>
                     <td>[[tutorial.afinacion]]</td>
                     <td>[[tutorial.dificultad]]</td>
+                    <td>[[tutorial.genero]]</td>
                     <td><a target="_blank" :href="[[tutorial.link_youtube]]">[[tutorial.link_youtube]]</a></td>
+                    <td>[[tutorial.capturas]]</td>
                     <td>[[convertirFecha(tutorial.fecha)]]</td>
                     <td>
-                      <a href="#modalDatos" class="btn btn-primary" data-bs-toggle="modal" @click="editarTutorial(tutorial.id)">Editar</a>
-                      <a class="btn btn-primary" style="margin-left: 10px;" @click="borrarTutorial(tutorial.id)">Borrar</a>
-                      <a :href="'/capturas/' + [[tutorial.id]]" class="btn btn-primary" style="margin-left: 10px;">Capturas</a>
-                      <a :href="'/generar/' + [[tutorial.id]]" class="btn btn-primary" style="margin-left: 10px;">Generar</a>
+                      <a href="#modalDatos" class="btn btn-primary" data-bs-toggle="modal" @click="editarTutorial(tutorial.id)"><i class="fa fa-pencil" aria-hidden="true"></i> Editar</a>
+                      <a class="btn btn-primary" style="margin-left: 10px;" @click="borrarTutorial(tutorial.id)"><i class="fa fa-times" aria-hidden="true"></i> Borrar</a>
+                      <a :href="'/capturas/' + [[tutorial.id]]" class="btn btn-primary" style="margin-left: 10px;"><i class="fa fa-file-image-o" aria-hidden="true"></i> Capturas</a>
+                      <a :href="'/generar/' + [[tutorial.id]]" class="btn btn-primary" style="margin-left: 10px;"><i class="fa fa-cog" aria-hidden="true"></i> Generar</a>
                     </td>
                 </tr>
             </tbody>
@@ -58,7 +124,7 @@
           <div class="modal-body">
             <form>
               <div class="mb-3">
-                <label for="titulo" class="col-form-label">Titulo:</label>
+                <label for="titulo" class="col-form-label">Título:</label>
                 <input type="text" class="form-control" id="titulo" v-model="titulo">
               </div>
               <div class="mb-3">
@@ -67,10 +133,14 @@
               </div>
               <div class="mb-3">
                 <label for="dificultad" class="col-form-label">Dificultad:</label>
-                <select class="form-select" v-model="dificultad">
-                  <option value="Fácil">Fácil</option>
-                  <option value="Intermedio">Intermedio</option>
-                  <option value="Difícil">Difícil</option>
+                <select class="form-select" v-model="dificultad_id">
+                  <option v-for = "dificultad in dificultades" :value="dificultad.id">[[dificultad.nombre]]</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="genero" class="col-form-label">Genéro:</label>
+                <select class="form-select" v-model="genero_id">
+                  <option v-for = "genero in generos" :value="genero.id">[[genero.nombre]]</option>
                 </select>
               </div>
               <div class="mb-3">
@@ -80,17 +150,15 @@
             </form>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-            <button type="button" class="btn btn-primary" @click="guardarTutorial()">Guardar</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fa fa-times" aria-hidden="true"></i> Cerrar</button>
+            <button type="button" class="btn btn-primary" @click="guardarTutorial()"><i class="fa fa-floppy-o" aria-hidden="true"></i> Guardar</button>
           </div>
         </div>
       </div>
     </div>
 
-    <br/>
-
-    <div class="col-12 text-center">
-      <a href="#modalDatos" class="btn btn-primary" data-bs-toggle="modal" @click="nuevoTutorial()">Agregar nuevo tutorial</a>
+    <div class="col-12 text-center" style="margin-top:60px;margin-bottom: -100px;">
+      <a href="#modalDatos" class="btn btn-primary" data-bs-toggle="modal" @click="nuevoTutorial()"><i class="fa fa-plus-circle" aria-hidden="true"></i> Agregar nuevo tutorial</a>
     </div>
 
   </div>
@@ -103,21 +171,35 @@
       delimiters: ["[[", "]]"],
       data() {
         return {
-            probando: "{{test}}",
+            dificultades: [],
+            generos: [],
             tutoriales: [],
             id: "",
             titulo: "",
             afinacion: "",
-            dificultad: "",
+            dificultad_id: "",
+            genero_id:"",
             link_youtube:"",
             editando: 0,
+            filtrar_titulo: "",
+            filtrar_afinacion: "",
+            filtrar_dificultad_id: "",
+            filtrar_genero_id: ""
         }
       },
       mounted: function() {
         this.listarTutoriales();
+        this.listarDificultades();
+        this.listarGeneros();
       },
       computed: {},
       methods: {
+        limpiarFiltros: function() {
+          this.filtrar_titulo = "";
+          this.filtrar_afinacion = "";
+          this.filtrar_dificultad_id = "";
+          this.filtrar_genero_id = "";
+        },
         listarTutoriales: function() {
           axios
           .post(url_api + "/api/tutoriales/")
@@ -128,11 +210,32 @@
             console.log(error);
           })
         },
+        listarDificultades: function() {
+          axios
+          .post(url_api + "/api/dificultades/")
+          .then(response => {
+            this.dificultades = response.data.dificultades
+          })
+          .catch(function (error) {
+            console.log(error);
+          })
+        },
+        listarGeneros: function() {
+          axios
+          .post(url_api + "/api/generos/")
+          .then(response => {
+            this.generos = response.data.generos
+          })
+          .catch(function (error) {
+            console.log(error);
+          })
+        },
         nuevoTutorial: function() {
           this.editando = 0;
           this.titulo = "";
           this.afinacion = "Estándar";
-          this.dificultad = "Fácil";
+          this.dificultad_id = 1;
+          this.genero_id = 1;
           this.link_youtube = "###";
         },
         editarTutorial: function(id_tutorial) {
@@ -144,7 +247,8 @@
             var datos = response.data.tutorial[0];
             this.titulo = datos.titulo;
             this.afinacion = datos.afinacion;
-            this.dificultad = datos.dificultad;
+            this.dificultad_id = datos.dificultad_id;
+            this.genero_id = datos.genero_id;
             this.link_youtube = datos.link_youtube;
           })
           .catch(function (error) {
@@ -154,7 +258,7 @@
         guardarTutorial: function() {
           if(this.editando == 0) {
             axios
-            .post(url_api + "/api/tutoriales/agregar",{"titulo":this.titulo,"afinacion":this.afinacion,"dificultad":this.dificultad,"link_youtube":this.link_youtube})
+            .post(url_api + "/api/tutoriales/agregar",{"titulo":this.titulo,"afinacion":this.afinacion,"dificultad_id":this.dificultad_id,"genero_id":this.genero_id,"link_youtube":this.link_youtube})
             .then(response => {
               var datos = response.data;
               document.getElementById('close').click();
@@ -166,7 +270,7 @@
             })
           } else {
             axios
-            .post(url_api + "/api/tutoriales/editar",{"id_tutorial":this.id,"titulo":this.titulo,"afinacion":this.afinacion,"dificultad":this.dificultad,"link_youtube":this.link_youtube})
+            .post(url_api + "/api/tutoriales/editar",{"id_tutorial":this.id,"titulo":this.titulo,"afinacion":this.afinacion,"dificultad_id":this.dificultad_id,"genero_id":this.genero_id,"link_youtube":this.link_youtube})
             .then(response => {
               var datos = response.data;
               document.getElementById('close').click();
@@ -177,6 +281,7 @@
               console.log(error);
             })
           }
+          this.limpiarFiltros();
         },
         borrarTutorial: function(id_tutorial) {
           Swal.fire({
@@ -199,6 +304,47 @@
             }
           })
         },
+        filtrarPorTitulo: function() {
+          axios
+            .post(url_api + "/api/tutoriales_filtro_titulo",{"filtro":this.filtrar_titulo})
+            .then(response => {
+              this.tutoriales = response.data.tutoriales;
+            })
+            .catch(function (error) {
+              console.log(error);
+            })
+        },
+        filtrarPorAfinacion: function() {
+          axios
+            .post(url_api + "/api/tutoriales_filtro_afinacion",{"filtro":this.filtrar_afinacion})
+            .then(response => {
+              this.tutoriales = response.data.tutoriales;
+            })
+            .catch(function (error) {
+              console.log(error);
+            })
+        },
+        filtrarPorDificultad: function() {
+          axios
+            .post(url_api + "/api/tutoriales_filtro_dificultad",{"filtro":this.filtrar_dificultad_id})
+            .then(response => {
+              this.tutoriales = response.data.tutoriales;
+            })
+            .catch(function (error) {
+              console.log(error);
+            })
+        },
+        filtrarPorGenero: function() {
+          axios
+            .post(url_api + "/api/tutoriales_filtro_genero",{"filtro":this.filtrar_genero_id})
+            .then(response => {
+              this.tutoriales = response.data.tutoriales;
+            })
+            .catch(function (error) {
+              console.log(error);
+            })
+        }
+        ,
         convertirFecha(fecha) {
           return moment(fecha).format("DD/MM/YYYY")
         }
